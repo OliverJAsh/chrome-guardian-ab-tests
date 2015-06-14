@@ -1,4 +1,9 @@
 {
+  "name": "ab-tests-chrome",
+  "version": "0.0.1",
+  "dependencies": {
+    "jspm": "^0.16.0-beta"
+  },
   "jspm": {
     "directories": {},
     "devDependencies": {
@@ -6,8 +11,5 @@
       "babel-runtime": "npm:babel-runtime@^5.4.3",
       "core-js": "npm:core-js@^0.9.10"
     }
-  },
-  "dependencies": {
-    "jspm": "^0.16.0-beta"
   }
 }
