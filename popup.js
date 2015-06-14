@@ -7,6 +7,5 @@ export default function () {
 
     getData().then(data => {
         console.log('Data:', data);
-        document.body.innerHTML = JSON.stringify(data);
     })
 };
