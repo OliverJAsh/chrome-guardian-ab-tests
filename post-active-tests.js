@@ -1,3 +1,3 @@
-System.import('common/modules/experiments/ab').then(function (abTests) {
+require(['common/modules/experiments/ab'], function (abTests) {
     window.postMessage(JSON.stringify({ type: 'tests', tests: abTests.getActiveTests() }), '*');
 });
