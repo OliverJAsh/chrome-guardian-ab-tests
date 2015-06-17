@@ -1,7 +1,7 @@
 var getTests = function () {
     return new Promise(function (resolve) {
         var s = document.createElement('script');
-        s.src = chrome.extension.getURL('script.js');
+        s.src = chrome.extension.getURL('post-active-tests.js');
         s.onload = function() {
             this.parentNode.removeChild(this);
         };

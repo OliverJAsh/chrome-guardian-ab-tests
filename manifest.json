@@ -17,7 +17,7 @@
         "128": "icon-128.png"
     },
     "manifest_version": 2,
-    "web_accessible_resources": ["script.js"],
+    "web_accessible_resources": ["post-active-tests.js"],
     "content_scripts": [
         {
             "matches": ["*://localhost/*", "*://localhost:*/*", "*://*.theguardian.com/*"],
