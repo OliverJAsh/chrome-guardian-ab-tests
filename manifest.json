@@ -20,7 +20,7 @@
     "web_accessible_resources": ["script.js"],
     "content_scripts": [
         {
-            "matches": ["http://localhost:9000/*"],
+            "matches": ["*://localhost/*", "*://localhost:*/*", "*://*.theguardian.com/*"],
             "js": ["content-script.js"]
         }
     ]
