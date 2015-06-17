@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(function() {
                 // That fires when page URL matches
                 conditions: [
                     new chrome.declarativeContent.PageStateMatcher({
-                        pageUrl: { urlMatches: 'localhost|www.theguardian\.com' }
+                        pageUrl: { urlMatches: 'localhost|m\.code\.dev-theguardian\.com|preview\.gutools\.co\.uk|www\.theguardian\.com' }
                     })
                 ],
                 // And shows the extension's page action.
