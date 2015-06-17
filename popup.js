@@ -6,18 +6,19 @@ import patch      from 'virtual-dom/patch';
 import virtualize from 'vdom-virtualize';
 import Im from 'immutable';
 
-export default function () {
-    const getData = () => new Promise((resolve, reject) => {
-        chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: 'getData' }, resolve);
-        });
+const getData = () => new Promise((resolve, reject) => {
+    chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'getData' }, resolve);
     });
+});
 
-    const setParticipations = (participations) => new Promise((resolve, reject) => {
-        chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { action: 'setParticipations', data: { participations } }, resolve);
-        });
+const setParticipations = (participations) => new Promise((resolve, reject) => {
+    chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'setParticipations', data: { participations } }, resolve);
     });
+});
+
+export default function () {
 
     getData().then(data => {
         const participations = Im.fromJS(data.participations)
