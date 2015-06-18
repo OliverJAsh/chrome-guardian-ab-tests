@@ -19,7 +19,22 @@ var getTests = function () {
 var localStorageKey = 'gu.ab.participations';
 
 var getParticipations = function () {
-    return JSON.parse(window.localStorage.getItem(localStorageKey));
+    var data = JSON.parse(window.localStorage.getItem(localStorageKey));
+    return Object.keys(data.value).reduce(function (accumulator, testId) {
+        accumulator[testId] = data.value[testId].variant;
+        return accumulator;
+    }, {});
+};
+
+var setParticipations = function (participations) {
+    var data = {
+        value: Object.keys(participations).reduce(function (accumulator, testId) {
+            accumulator[testId] = { variant: participations[testId] };
+            return accumulator;
+        }, {})
+    };
+    console.log('A/B tests extension: set participations', data);
+    window.localStorage.setItem(localStorageKey, JSON.stringify(data));
 };
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -29,7 +44,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             getTests()
                 .then(function (tests) {
                     return {
-                        participations: participations.value,
+                        participations: participations,
                         tests: tests
                     };
                 })
@@ -37,14 +52,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
         case 'setParticipations':
             var participations = request.data.participations;
-            var data = {
-                value: Object.keys(participations).reduce(function (accumulator, testId) {
-                    accumulator[testId] = { variant: participations[testId] };
-                    return accumulator;
-                }, {})
-            };
-            console.log('A/B tests extension: set participations', data);
-            window.localStorage.setItem(localStorageKey, JSON.stringify(data));
+            setParticipations(participations);
             break;
     }
 

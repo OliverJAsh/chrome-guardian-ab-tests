@@ -18,42 +18,34 @@ const setParticipations = (participations) => new Promise((resolve, reject) => {
     });
 });
 
+const ih = (tagName, children) => h(tagName, children.toJS ? children.toJS() : children);
+
 export default function () {
 
     getData().then(data => {
-        const participations = Im.fromJS(data.participations)
-            .map(participation => participation.get('variant'));
-
-        const tests = Im.fromJS(data.tests)
-            .map(test =>
-                test.set('variant', participations.find((variant, participation) =>
-                    participation === test.get('id'))))
-            .toJS();
-
-
         function tableComponent() {
             const select$ = new Rx.Subject();
             const headers = ['id', 'description', 'variants'];
+
+            function variantButtonElement(test, variant) {
+                return h('button', {
+                    onclick: () => select$.onNext({ id: test.get('id'), variant: variant.get('id') }),
+                    className: variant.get('id') === test.get('variant') ? 'is-active' : ''
+                }, variant.get('id'));
+            }
 
             function view$(tests$) {
                 const rows$ = tests$.map(tests =>
                     tests.map(test =>
                         h('tr', headers.map(header =>
-                            h('td', header === 'variants'
-                                ? test.variants.map(variant =>
-                                    h('button', {
-                                        onclick: () => select$.onNext({ id: test.id, variant: variant.id }),
-                                        className: variant.id === test.variant ? 'is-active' : ''
-                                    }, variant.id))
-                                : test[header])
-                        ))));
+                            ih('td', header !== 'variants'
+                                ? test.get(header)
+                                : test.get('variants').map(variant => variantButtonElement(test, variant)))))));
 
                 return rows$.map(rows => {
                     return h('table', [
-                        h('thead', [
-                            h('tr', headers.map(key => h('th', key)))
-                        ]),
-                        h('tbody', rows)
+                        h('thead', h('tr', headers.map(key => h('th', key)))),
+                        ih('tbody', rows)
                     ]);
                 });
             }
@@ -70,21 +62,17 @@ export default function () {
         function view() {
             const table = tableComponent();
 
-            table.intents.select$.subscribe(selectedTest => console.log(`Test ${selectedTest.id}, variant ${selectedTest.variant}`));
-            const participations$ = table.intents.select$.startWith({}).scan(participations, (participations, selectedTest) =>
-                Im.fromJS(participations)
-                    .setIn([selectedTest.id], selectedTest.variant)
-                    .toJS());
-            participations$.subscribe(participations => console.log(participations));
-            participations$.subscribe(setParticipations);
-            const tests$ = table.intents.select$.startWith({}).scan(tests, (tests, selectedTest) =>
-                Im.fromJS(tests)
-                    .map(test =>
-                        test.get('id') === selectedTest.id
-                            ? test.set('variant', selectedTest.variant)
-                            : test)
-                    .toJS());
-            tests$.subscribe(tests => console.table(tests));
+            const participations$ = table.intents.select$.startWith({}).scan(Im.fromJS(data.participations), (participations, selectedTest) =>
+                participations.setIn([selectedTest.id], selectedTest.variant));
+            participations$.subscribe(participations => console.log(participations.toJS()));
+            participations$.subscribe(participations => setParticipations(participations.toJS()));
+
+            const tests$ = participations$.scan(Im.fromJS(data.tests), (tests, participations) =>
+                tests.map(test =>
+                    test.set('variant', participations.find((variant, participation) =>
+                        participation === test.get('id')))));
+            tests$.subscribe(tests => console.table(tests.toJS()));
+
             const tree$ = table.view$(tests$);
 
             return { tree$ };
