@@ -20,7 +20,7 @@
     "web_accessible_resources": ["post-active-tests.js"],
     "content_scripts": [
         {
-            "matches": ["*://localhost/*", "*://localhost:*/*", "*://m.code.dev-theguardian.com/*", "*://preview.gutools.co.uk/*", "*://*.theguardian.com/*"],
+            "matches": ["*://localhost/*", "*://localhost:*/*", "*://m.thegulocal.com/*", "*://m.code.dev-theguardian.com/*", "*://preview.gutools.co.uk/*", "*://*.theguardian.com/*"],
             "js": ["content-script.js"]
         }
     ]
