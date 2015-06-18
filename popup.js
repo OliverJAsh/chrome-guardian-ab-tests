@@ -29,9 +29,9 @@ export default function () {
 
             function variantButtonElement(test, variant) {
                 return h('button', {
-                    onclick: () => select$.onNext({ id: test.get('id'), variant: variant.get('id') }),
-                    className: variant.get('id') === test.get('variant') ? 'is-active' : ''
-                }, variant.get('id'));
+                    onclick: () => select$.onNext({ id: test.get('id'), variant }),
+                    className: variant === test.get('variant') ? 'is-active' : ''
+                }, variant);
             }
 
             function view$(tests$) {
@@ -67,7 +67,13 @@ export default function () {
             participations$.subscribe(participations => console.log(participations.toJS()));
             participations$.subscribe(participations => setParticipations(participations.toJS()));
 
-            const tests$ = participations$.scan(Im.fromJS(data.tests), (tests, participations) =>
+            const tests = Im.fromJS(data.tests)
+                .map(test =>
+                    test
+                        .updateIn(['variants'], variants => variants.map(variant => variant.get('id')))
+                        .updateIn(['variants'], variants => variants.push('notintest')));
+
+            const tests$ = participations$.scan(tests, (tests, participations) =>
                 tests.map(test =>
                     test.set('variant', participations.find((variant, participation) =>
                         participation === test.get('id')))));
