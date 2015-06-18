@@ -7,18 +7,50 @@
         <script src="config.js"></script>
         <script src="import.js"></script>
         <style>
-            button {
-                background: lightgrey;
-                border: 0;
+            html,body {
+                height: 100%;
+                margin: 0;
+                /*background-color: #E5E5E5;*/
+                font-family: 'Roboto', 'Noto', sans-serif;
+                font-size: 16px;
+                -webkit-font-smoothing: antialiased;
+                text-rendering: optimizeLegibility;
             }
 
             .is-active {
                 background-color: grey;
                 color: white;
             }
+
+            table th {
+                text-transform: uppercase;
+                font-size: 14px;
+                text-align: left;
+                padding-right: 40px;
+                border-bottom: 1px solid #eee;
+                font-weight: 500;
+                line-height: 48px;
+            }
+
+            table td {
+                padding: 0;
+                margin: 0;
+                vertical-align: top;
+                padding: 12px 12px 12px 0;
+            }
         </style>
+        <link rel="import" href="polymer-csp-build.html">
     </head>
     <body>
         <main id="out">Loading…</main>
+        <paper-item>Item</paper-item>
+        <paper-item>Item</paper-item>
+        <paper-item>
+            <paper-radio-group selected="small">
+                <paper-radio-button name="small">Small</paper-radio-button>
+                <paper-radio-button name="medium">Medium</paper-radio-button>
+                <paper-radio-button name="large">Large</paper-radio-button>
+            </paper-radio-group>
+        </paper-item>
     </body>
 </html>

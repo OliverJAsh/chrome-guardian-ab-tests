@@ -28,10 +28,23 @@ export default function () {
             const headers = ['id', 'description', 'variants'];
 
             function variantButtonElement(test, variant) {
-                return h('button', {
+                // <paper-radio-group selected="small">
+                //     <paper-radio-button name="small">Small</paper-radio-button>
+                //     <paper-radio-button name="medium">Medium</paper-radio-button>
+                //     <paper-radio-button name="large">Large</paper-radio-button>
+                // </paper-radio-group>
+                return h('paper-radio-button', {
                     onclick: () => select$.onNext({ id: test.get('id'), variant }),
-                    className: variant === test.get('variant') ? 'is-active' : ''
+                    // className: variant === test.get('variant') ? 'is-active' : ''
+                    attributes: {
+                        name: variant
+                    }
                 }, variant);
+            }
+
+            function variantsElement(test, variants) {
+                return ih('paper-radio-group', { attributes: { selected: 'small' } },
+                    variants.map(variant => variantButtonElement(test, variant)));
             }
 
             function view$(tests$) {
@@ -40,7 +53,8 @@ export default function () {
                         h('tr', headers.map(header =>
                             ih('td', header !== 'variants'
                                 ? test.get(header)
-                                : test.get('variants').map(variant => variantButtonElement(test, variant)))))));
+                                // TODO: Find a way not to pass in test
+                                : variantsElement(test, test.get('variants')))))));
 
                 return rows$.map(rows => {
                     return h('table', [
