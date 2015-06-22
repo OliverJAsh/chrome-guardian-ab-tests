@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Bump version in manifest"
+read
+
+rm -rf upload
 mkdir upload
 
 cp -f background.js build.js* config.js content-script.js icon-* import.js\
