@@ -50,20 +50,24 @@ const render = data => {
         const select$ = new Rx.Subject();
         const headers = ['id', 'variants'];
 
-        function variantButtonElement(test, variant) {
+        function variantButtonElement(test, variant, selectedVariant) {
             return h('button', {
                 onclick: () => select$.onNext({ id: test.get('id'), variant }),
-                className: variant === test.get('variant') ? 'is-active' : ''
+                className: variant === selectedVariant ? 'is-active' : ''
             }, variant);
         }
 
-        function view$(tests$) {
-            const rows$ = tests$.map(tests =>
-                tests.map(test =>
-                    h('tr', headers.map(header =>
-                        ih('td', header !== 'variants'
-                            ? test.get(header)
-                            : test.get('variants').map(variant => variantButtonElement(test, variant)))))));
+        function view$(tests, participations$) {
+            const rows$ = participations$.map(
+                participations =>
+                    tests.map(test =>
+                        h('tr', headers.map(header =>
+                            ih('td', header !== 'variants'
+                                ? test.get(header)
+                                : test.get('variants').map(variant => {
+                                    const selectedVariant = participations.get(test.get('id'));
+                                    return variantButtonElement(test, variant, selectedVariant);
+                                }))))));
 
             return rows$.map(rows => {
                 return h('table', [
@@ -93,16 +97,7 @@ const render = data => {
         // Side effect
         participations$.subscribe(setParticipations);
 
-        const updateTestVariant = (test, participations) => {
-            const variant = participations.get(test.get('id'));
-            return test.set('variant', variant);
-        };
-        const updateTestVariants = (tests, participations) =>
-            tests.map(test => updateTestVariant(test, participations));
-
-        const tests$ = participations$.scan(tests, updateTestVariants);
-
-        const tree$ = table.view$(tests$);
+        const tree$ = table.view$(tests, participations$);
 
         return { tree$ };
     }
