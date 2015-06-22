@@ -28,7 +28,14 @@ const sendMessageToPage = message => new Promise(resolve =>
 const getData = () => sendMessageToPage({ action: 'getData' });
 const setParticipations = participations => sendMessageToPage({ action: 'setParticipations', data: { participations } });
 
-const ih = (tagName, children) => h(tagName, children.toJS ? children.toJS() : children);
+// TODO: Why is this needed?
+const ih = (tagName, options, children) => {
+    if (!children) {
+        children = options;
+        options = {};
+    }
+    return h(tagName, options, children.toJS ? children.toJS() : children);
+};
 
 export default function () {
 
