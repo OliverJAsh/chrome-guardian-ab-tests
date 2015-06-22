@@ -92,15 +92,17 @@ export default function () {
                 .scan(participations,
                     (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
 
+            // Side effect
             participations$.subscribe(setParticipations);
 
             const updateTestVariant = (test, participations) => {
                 const variant = participations.get(test.get('id'));
                 return test.set('variant', variant);
             };
+            const updateTestVariants = (tests, participations) =>
+                tests.map(test => updateTestVariant(test, participations));
 
-            const tests$ = participations$.scan(tests, (tests, participations) =>
-                tests.map(test => updateTestVariant(test, participations)));
+            const tests$ = participations$.scan(tests, updateTestVariants);
 
             const tree$ = table.view$(tests$);
 
