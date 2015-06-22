@@ -121,6 +121,4 @@ const render = data => {
         subscribeOnError(err => console.error(err));
 };
 
-export default function () {
-    getData().then(render);
-}
+getData().then(render);
