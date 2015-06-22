@@ -1,1 +1,1 @@
-jspm bundle-sfx popup build.js
+jspm bundle --inject popup build.js
