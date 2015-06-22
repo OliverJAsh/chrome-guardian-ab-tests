@@ -6,17 +6,27 @@ import patch      from 'virtual-dom/patch';
 import virtualize from 'vdom-virtualize';
 import Im from 'immutable';
 
-const getData = () => new Promise((resolve, reject) => {
-    chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'getData' }, resolve);
-    });
-});
+const getTab = () => new Promise((resolve, reject) => {
+    // For debugging we allow the popup to be used as a tab itself
+    const query = window.document.title === 'A/B Tests'
+        ? Im.Map({ url: [
+            '*://www.theguardian.com/*',
+            '*://m.code.dev-theguardian.com/*',
+            '*://preview.gutools.co.uk/*',
+            '*://m.thegulocal.com/*',
+            // TODO: Why doesn't * work for this scheme?
+            'http://localhost:9000/*'
+        ] })
+        : Im.Map({ active: true });
+    chrome.tabs.query(Im.Map({ currentWindow: true }).merge(query).toJS(), tabs => resolve(tabs[0]));
+})
+    .then(tab => { console.log(`Tab: ${tab.url}`); return tab; });
 
-const setParticipations = (participations) => new Promise((resolve, reject) => {
-    chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'setParticipations', data: { participations } }, resolve);
-    });
-});
+const sendMessageToPage = message => new Promise(resolve =>
+    getTab().then(tab => chrome.tabs.sendMessage(tab.id, message, resolve)));
+
+const getData = () => sendMessageToPage({ action: 'getData' });
+const setParticipations = participations => sendMessageToPage({ action: 'setParticipations', data: { participations } });
 
 const ih = (tagName, children) => h(tagName, children.toJS ? children.toJS() : children);
 
