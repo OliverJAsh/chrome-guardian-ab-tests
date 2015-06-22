@@ -15,8 +15,8 @@ System.config({
 
 System.config({
   "map": {
-    "babel": "npm:babel-core@5.5.8",
-    "babel-runtime": "npm:babel-runtime@5.5.8",
+    "babel": "npm:babel-core@5.6.4",
+    "babel-runtime": "npm:babel-runtime@5.6.4",
     "core-js": "npm:core-js@0.9.18",
     "immutable": "npm:immutable@3.7.4",
     "moment": "github:moment/moment@2.10.3",
@@ -35,7 +35,7 @@ System.config({
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
     },
-    "npm:babel-runtime@5.5.8": {
+    "npm:babel-runtime@5.6.4": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:core-js@0.9.18": {
