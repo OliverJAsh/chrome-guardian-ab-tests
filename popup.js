@@ -10,8 +10,9 @@ const getTab = () => new Promise((resolve, reject) => {
     chrome.tabs.query({ currentWindow: true, active: true }, tabs => resolve(tabs[0]));
 });
 
-const sendMessageToPage = message => new Promise(resolve =>
-    getTab().then(tab => chrome.tabs.sendMessage(tab.id, message, resolve)));
+const sendMessageToPage =
+    message => new Promise(resolve =>
+        getTab().then(tab => chrome.tabs.sendMessage(tab.id, message, resolve)));
 
 const getData = () => sendMessageToPage({ action: 'getData' });
 const setParticipations = participations =>
