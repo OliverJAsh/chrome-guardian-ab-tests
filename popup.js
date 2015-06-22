@@ -40,6 +40,12 @@ const ih = (tagName, options, children) => {
 export default function () {
 
     getData().then(data => {
+        const tests = Im.fromJS(data.tests)
+            .map(test =>
+                test
+                    .updateIn(['variants'], variants => variants.map(variant => variant.get('id')))
+                    .updateIn(['variants'], variants => variants.push('notintest')));
+
         function tableComponent() {
             const select$ = new Rx.Subject();
             const headers = ['id', 'description', 'variants'];
@@ -83,12 +89,6 @@ export default function () {
                 participations.setIn([selectedTest.id], selectedTest.variant));
             participations$.subscribe(participations => console.log(participations.toJS()));
             participations$.subscribe(participations => setParticipations(participations.toJS()));
-
-            const tests = Im.fromJS(data.tests)
-                .map(test =>
-                    test
-                        .updateIn(['variants'], variants => variants.map(variant => variant.get('id')))
-                        .updateIn(['variants'], variants => variants.push('notintest')));
 
             const tests$ = participations$.scan(tests, (tests, participations) =>
                 tests.map(test =>
