@@ -19,8 +19,7 @@ const getTab = () => new Promise((resolve, reject) => {
         ] })
         : Im.Map({ active: true });
     chrome.tabs.query(Im.Map({ currentWindow: true }).merge(query).toJS(), tabs => resolve(tabs[0]));
-})
-    .then(tab => { console.log(`Tab: ${tab.url}`); return tab; });
+});
 
 const sendMessageToPage = message => new Promise(resolve =>
     getTab().then(tab => chrome.tabs.sendMessage(tab.id, message, resolve)));
@@ -39,6 +38,7 @@ const ih = (tagName, options, children) => {
 };
 
 const render = data => {
+    // Normalize data
     const initialTests = Im.fromJS(data.tests)
         .map(test =>
             test
