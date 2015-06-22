@@ -38,91 +38,90 @@ const ih = (tagName, options, children) => {
     return h(tagName, options, children.toJS ? children.toJS() : children);
 };
 
+const render = data => {
+    const tests = Im.fromJS(data.tests)
+        .map(test =>
+            test
+                .updateIn(['variants'], variants => variants.map(variant => variant.get('id')))
+                .updateIn(['variants'], variants => variants.push('notintest')));
+    const participations = Im.fromJS(data.participations);
+
+    function tableComponent() {
+        const select$ = new Rx.Subject();
+        const headers = ['id', 'variants'];
+
+        function variantButtonElement(test, variant) {
+            return h('button', {
+                onclick: () => select$.onNext({ id: test.get('id'), variant }),
+                className: variant === test.get('variant') ? 'is-active' : ''
+            }, variant);
+        }
+
+        function view$(tests$) {
+            const rows$ = tests$.map(tests =>
+                tests.map(test =>
+                    h('tr', headers.map(header =>
+                        ih('td', header !== 'variants'
+                            ? test.get(header)
+                            : test.get('variants').map(variant => variantButtonElement(test, variant)))))));
+
+            return rows$.map(rows => {
+                return h('table', [
+                    h('thead', h('tr', headers.map(key => h('th', key)))),
+                    ih('tbody', rows)
+                ]);
+            });
+        }
+
+        return {
+            view$,
+            intents: {
+                select$
+            }
+        };
+    }
+
+
+    function view() {
+        const table = tableComponent();
+
+        const participations$ = table.intents.select$
+            .startWith({})
+            .scan(participations,
+                (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
+
+        // Side effect
+        participations$.subscribe(setParticipations);
+
+        const updateTestVariant = (test, participations) => {
+            const variant = participations.get(test.get('id'));
+            return test.set('variant', variant);
+        };
+        const updateTestVariants = (tests, participations) =>
+            tests.map(test => updateTestVariant(test, participations));
+
+        const tests$ = participations$.scan(tests, updateTestVariants);
+
+        const tree$ = table.view$(tests$);
+
+        return { tree$ };
+    }
+
+
+    const v = view();
+
+
+    const out = document.getElementById('out');
+    const initialDom = virtualize(out);
+
+    v.tree$.
+        startWith(initialDom).
+        bufferWithCount(2, 1).
+        map(([last, current]) => diff(last, current)).
+        reduce((out, patches) => patch(out, patches), out).
+        subscribeOnError(err => console.error(err));
+};
+
 export default function () {
-
-    getData().then(data => {
-        const tests = Im.fromJS(data.tests)
-            .map(test =>
-                test
-                    .updateIn(['variants'], variants => variants.map(variant => variant.get('id')))
-                    .updateIn(['variants'], variants => variants.push('notintest')));
-        const participations = Im.fromJS(data.participations);
-
-        function tableComponent() {
-            const select$ = new Rx.Subject();
-            const headers = ['id', 'description', 'variants'];
-
-            function variantButtonElement(test, variant) {
-                return h('button', {
-                    onclick: () => select$.onNext({ id: test.get('id'), variant }),
-                    className: variant === test.get('variant') ? 'is-active' : ''
-                }, variant);
-            }
-
-            function view$(tests$) {
-                const rows$ = tests$.map(tests =>
-                    tests.map(test =>
-                        h('tr', headers.map(header =>
-                            ih('td', header !== 'variants'
-                                ? test.get(header)
-                                : test.get('variants').map(variant => variantButtonElement(test, variant)))))));
-
-                return rows$.map(rows => {
-                    return h('table', [
-                        h('thead', h('tr', headers.map(key => h('th', key)))),
-                        ih('tbody', rows)
-                    ]);
-                });
-            }
-
-            return {
-                view$,
-                intents: {
-                    select$
-                }
-            };
-        }
-
-
-        function view() {
-            const table = tableComponent();
-
-            const participations$ = table.intents.select$
-                .startWith({})
-                .scan(participations,
-                    (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
-
-            // Side effect
-            participations$.subscribe(setParticipations);
-
-            const updateTestVariant = (test, participations) => {
-                const variant = participations.get(test.get('id'));
-                return test.set('variant', variant);
-            };
-            const updateTestVariants = (tests, participations) =>
-                tests.map(test => updateTestVariant(test, participations));
-
-            const tests$ = participations$.scan(tests, updateTestVariants);
-
-            const tree$ = table.view$(tests$);
-
-            return { tree$ };
-        }
-
-
-        const v = view();
-
-
-        const out = document.getElementById('out');
-        const initialDom = virtualize(out);
-
-        v.tree$.
-            startWith(initialDom).
-            bufferWithCount(2, 1).
-            map(([last, current]) => diff(last, current)).
-            reduce((out, patches) => patch(out, patches), out).
-            subscribeOnError(err => console.error(err));
-    });
-
-
+    getData().then(render);
 }
