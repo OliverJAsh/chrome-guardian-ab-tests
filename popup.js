@@ -108,7 +108,7 @@ const render = data => {
         bufferWithCount(2, 1).
         map(([last, current]) => diff(last, current)).
         reduce((out, patches) => patch(out, patches), out).
-        subscribeOnError(err => console.error(err));
+        subscribeOnError(err => { throw err; });
 };
 
 getData().then(render);
