@@ -39,12 +39,12 @@ const ih = (tagName, options, children) => {
 };
 
 const render = data => {
-    const tests = Im.fromJS(data.tests)
+    const initialTests = Im.fromJS(data.tests)
         .map(test =>
             test
                 .updateIn(['variants'], variants => variants.map(variant => variant.get('id')))
                 .updateIn(['variants'], variants => variants.push('notintest')));
-    const participations = Im.fromJS(data.participations);
+    const initialParticipations = Im.fromJS(data.participations);
 
     function tableComponent() {
         const select$ = new Rx.Subject();
@@ -57,17 +57,21 @@ const render = data => {
             }, variant);
         }
 
+        function rowElement(test, participations) {
+            const cellElement =
+                header => ih('td',
+                    header !== 'variants'
+                        ? test.get(header)
+                        : test.get('variants').map(variant => {
+                            const selectedVariant = participations.get(test.get('id'));
+                            return variantButtonElement(test, variant, selectedVariant);
+                        }));
+
+            return h('tr', headers.map(cellElement));
+        }
+
         function view$(tests, participations$) {
-            const rows$ = participations$.map(
-                participations =>
-                    tests.map(test =>
-                        h('tr', headers.map(header =>
-                            ih('td', header !== 'variants'
-                                ? test.get(header)
-                                : test.get('variants').map(variant => {
-                                    const selectedVariant = participations.get(test.get('id'));
-                                    return variantButtonElement(test, variant, selectedVariant);
-                                }))))));
+            const rows$ = participations$.map(participations => tests.map(test => rowElement(test, participations)));
 
             return rows$.map(rows => {
                 return h('table', [
@@ -91,13 +95,13 @@ const render = data => {
 
         const participations$ = table.intents.select$
             .startWith({})
-            .scan(participations,
+            .scan(initialParticipations,
                 (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
 
         // Side effect
         participations$.subscribe(setParticipations);
 
-        const tree$ = table.view$(tests, participations$);
+        const tree$ = table.view$(initialTests, participations$);
 
         return { tree$ };
     }
