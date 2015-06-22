@@ -10,7 +10,14 @@
         "default_popup": "popup.html"
     },
     "permissions": [
-        "declarativeContent", "tabs", "http://*/*", "https://*/*", "activeTab"
+        "declarativeContent",
+        "activeTab",
+
+        "*://www.theguardian.com/*",
+        "*://m.code.dev-theguardian.com/*",
+        "*://preview.gutools.co.uk/*",
+        "*://m.thegulocal.com/*",
+        "http://localhost:9000/*"
     ],
     "icons": {
         "48": "icon-48.png",
@@ -20,7 +27,13 @@
     "web_accessible_resources": ["post-active-tests.js"],
     "content_scripts": [
         {
-            "matches": ["*://localhost/*", "*://localhost:*/*", "*://m.thegulocal.com/*", "*://m.code.dev-theguardian.com/*", "*://preview.gutools.co.uk/*", "*://*.theguardian.com/*"],
+            "matches": [
+                "*://www.theguardian.com/*",
+                "*://m.code.dev-theguardian.com/*",
+                "*://preview.gutools.co.uk/*",
+                "*://m.thegulocal.com/*",
+                "http://localhost:9000/*"
+            ],
             "js": ["content-script.js"]
         }
     ]
