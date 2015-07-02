@@ -14,7 +14,14 @@ const sendMessageToPage =
     message => new Promise(resolve =>
         getTab().then(tab => chrome.tabs.sendMessage(tab.id, message, resolve)));
 
-const getData = () => sendMessageToPage({ action: 'getData' });
+const getPageData = () => sendMessageToPage({ action: 'getData' });
+const getServerSideVariant = () => new Promise(resolve => {
+    const key = 'server-side-variant';
+    chrome.storage.local.get(key, data => resolve(data[key]));
+});
+const getData = () => Promise.all([getPageData(), getServerSideVariant()])
+    .then((results) => ({ tests: results[0].tests, participations: results[0].participations, serverSideVariant: results[1] }));
+
 const setParticipations = participations =>
     sendMessageToPage({ action: 'setParticipations', data: { participations: participations.toJS() } });
 
@@ -38,6 +45,7 @@ const render = data => {
 
     function tableComponent() {
         const select$ = new Rx.Subject();
+        const selectServerSideVariant$ = new Rx.Subject();
         const headers = ['id', 'variants'];
 
         function variantButtonElement(test, variant, selectedVariant) {
@@ -60,23 +68,56 @@ const render = data => {
             return h('tr', headers.map(cellElement));
         }
 
-        function view$(tests, participations$) {
-            const rows$ = participations$.map(participations => tests.map(test => rowElement(test, participations)));
+        function view$(tests, participations$, serverSideVariant$) {
+            return Rx.Observable.combineLatest(
+                participations$,
+                serverSideVariant$,
+                (participations, serverSideVariant) => {
+                    const rows = tests.map(test => rowElement(test, participations, serverSideVariant));
+                    const variantIds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-            return rows$.map(rows => {
-                return h('body', [
-                    h('table', [
-                        h('thead', h('tr', headers.map(key => h('th', key)))),
-                        ih('tbody', rows)
-                    ])
-                ]);
-            });
+                    return h('body', [
+                        h('h3', 'Server-side test variant'),
+                        h('div', {
+                            onchange: event => selectServerSideVariant$.onNext(event.target.value)
+                        }, [
+                            // TODO: Or just have a clear button?
+                            h('div', h('label', [
+                                h('input', {
+                                    type: 'radio',
+                                    name: 'variant',
+                                    value: '',
+                                    checked: ! serverSideVariant
+                                }),
+                                'None'
+                            ])),
+                            variantIds
+                                .map(variantId => h('div', [
+                                    h('label', [
+                                        h('input', {
+                                            type: 'radio',
+                                            name: 'variant',
+                                            value: variantId,
+                                            checked: serverSideVariant && Number(serverSideVariant) === variantId
+                                        }),
+                                        variantId.toString()
+                                    ])
+                                ]))
+                        ]),
+                        h('h3', 'Client-side tests'),
+                        h('table', [
+                            h('thead', h('tr', headers.map(key => h('th', key)))),
+                            ih('tbody', rows)
+                        ])
+                    ]);
+                });
         }
 
         return {
             view$,
             intents: {
-                select$
+                select$,
+                selectServerSideVariant$
             }
         };
     }
@@ -89,11 +130,19 @@ const render = data => {
             .startWith({})
             .scan(initialParticipations,
                 (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
+        const serverSideVariant$ = table.intents.selectServerSideVariant$
+            .startWith(data.serverSideVariant);
 
         // Side effect
         participations$.subscribe(setParticipations);
 
-        const tree$ = table.view$(initialTests, participations$);
+        serverSideVariant$.subscribe(variantId => {
+            // TODO: Unique per domain!
+            chrome.storage.local.set({ 'server-side-variant': variantId });
+            chrome.runtime.sendMessage('updatedServerSideVariant');
+        });
+
+        const tree$ = table.view$(initialTests, participations$, serverSideVariant$);
 
         return { tree$ };
     }
