@@ -64,9 +64,11 @@ const render = data => {
             const rows$ = participations$.map(participations => tests.map(test => rowElement(test, participations)));
 
             return rows$.map(rows => {
-                return h('table', [
-                    h('thead', h('tr', headers.map(key => h('th', key)))),
-                    ih('tbody', rows)
+                return h('body', [
+                    h('table', [
+                        h('thead', h('tr', headers.map(key => h('th', key)))),
+                        ih('tbody', rows)
+                    ])
                 ]);
             });
         }
@@ -100,7 +102,7 @@ const render = data => {
     const v = view();
 
 
-    const out = document.getElementById('out');
+    const out = document.body;
     const initialDom = virtualize(out);
 
     v.tree$.
