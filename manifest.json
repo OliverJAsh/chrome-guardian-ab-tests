@@ -11,13 +11,11 @@
     },
     "permissions": [
         "declarativeContent",
+        "declarativeWebRequest",
         "activeTab",
+        "storage",
 
-        "*://www.theguardian.com/*",
-        "*://m.code.dev-theguardian.com/*",
-        "*://preview.gutools.co.uk/*",
-        "*://m.thegulocal.com/*",
-        "http://localhost:9000/*"
+        "*://*/*"
     ],
     "icons": {
         "16": "icon-16.png",
