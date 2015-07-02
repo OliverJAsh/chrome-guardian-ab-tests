@@ -38,6 +38,7 @@ const render = data => {
 
     function tableComponent() {
         const select$ = new Rx.Subject();
+        const undo$ = new Rx.Subject();
         const headers = ['id', 'variants'];
 
         function variantButtonElement(test, variant, selectedVariant) {
@@ -64,7 +65,14 @@ const render = data => {
             const rows$ = participations$.map(participations => tests.map(test => rowElement(test, participations)));
 
             return rows$.map(rows => {
-                return h('body', [
+                return h('body', {
+                    onkeyup: event => {
+                        console.log('Undo command', event);
+                        // 85 undo
+                        // 82 redo
+                        undo$.onNext(true);
+                    }
+                }, [
                     h('table', [
                         h('thead', h('tr', headers.map(key => h('th', key)))),
                         ih('tbody', rows)
@@ -76,7 +84,8 @@ const render = data => {
         return {
             view$,
             intents: {
-                select$
+                select$,
+                undo$
             }
         };
     }
@@ -86,14 +95,38 @@ const render = data => {
         const table = tableComponent();
 
         const participations$ = table.intents.select$
-            .startWith({})
-            .scan(initialParticipations,
-                (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
+                .startWith({})
+                .scan(initialParticipations,
+                    (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
+
+        const history$ = Rx.Observable.merge(
+            participations$.map(x => ({ type: 'state', value: x })),
+            table.intents.undo$.map(x => ({ type: 'undo' })))
+            .scan(Im.fromJS({ history: [] }), (previous, action) => {
+                const history = previous.get('history');
+                if (action.type === 'undo' && history.count() > 1) {
+                    return previous
+                        .set('value', history.get(history.count() - 1 - 1))
+                        .set('history', history.pop());
+                } else if (action.type === 'state') {
+                    return previous
+                        .set('value', action.value)
+                        .set('history', history.push(action.value));
+                } else {
+                    return previous;
+                }
+            });
+
+        const state$ = history$.map(x => x.get('value'));
+
+        participations$.subscribe(x => console.log('Participations: ', x.toJS()));
+        history$.subscribe(x => console.log('History: ', x.toJS()));
+        state$.subscribe(x => console.log('State: ', x.toJS()));
 
         // Side effect
-        participations$.subscribe(setParticipations);
+        state$.subscribe(setParticipations);
 
-        const tree$ = table.view$(initialTests, participations$);
+        const tree$ = table.view$(initialTests, state$);
 
         return { tree$ };
     }
