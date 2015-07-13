@@ -1,6 +1,6 @@
 {
     "name": "A/B Tests",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "background": {
         "scripts": ["background.js"],
         "persistent": false
