@@ -1,6 +1,7 @@
 {
   "name": "ab-tests-chrome",
   "version": "0.0.1",
+  "private": true,
   "dependencies": {
     "jspm": "^0.16.0-beta.3"
   },
