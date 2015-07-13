@@ -3,11 +3,26 @@
     <head>
         <meta charset="utf-8" />
         <title>A/B Tests</title>
+        <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.indigo-pink.min.css">
+        <script src="https://storage.googleapis.com/code.getmdl.io/1.0.0/material.min.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+
         <script src="jspm_packages/system.src.js"></script>
         <script src="config.js"></script>
         <script src="import.js"></script>
         <style>
             /*Prevent the table from wrapping*/
+            body {
+                font-family: 'Roboto','Helvetica','Arial',sans-serif;
+                /*Reset*/
+                font-size: 16px;
+            }
+
+            th {
+                text-transform: uppercase;
+            }
+
             td {
                 white-space: nowrap;
             }
@@ -20,6 +35,20 @@
             .is-active {
                 background-color: grey;
                 color: white;
+            }
+
+            .mdl-data-table th,
+            .mdl-data-table {
+                /*Reset*/
+                font-size: inherit;
+            }
+
+            .mdl-radio {
+                margin-left: 1.5rem;
+            }
+
+            .mdl-radio:first-child {
+                margin-left: 0;
             }
         </style>
     </head>
