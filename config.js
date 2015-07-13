@@ -15,8 +15,8 @@ System.config({
 
 System.config({
   "map": {
-    "babel": "npm:babel-core@5.6.4",
-    "babel-runtime": "npm:babel-runtime@5.6.4",
+    "babel": "npm:babel-core@5.6.18",
+    "babel-runtime": "npm:babel-runtime@5.6.18",
     "core-js": "npm:core-js@0.9.18",
     "immutable": "npm:immutable@3.7.4",
     "moment": "github:moment/moment@2.10.3",
@@ -35,7 +35,7 @@ System.config({
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
     },
-    "npm:babel-runtime@5.6.4": {
+    "npm:babel-runtime@5.6.18": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:core-js@0.9.18": {
@@ -53,14 +53,10 @@ System.config({
       "individual": "npm:individual@3.0.0"
     },
     "npm:global@4.3.0": {
-      "min-document": "npm:min-document@2.14.2",
       "process": "npm:process@0.5.2"
     },
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
-    },
-    "npm:min-document@2.14.2": {
-      "dom-walk": "npm:dom-walk@0.1.1"
     },
     "npm:next-tick@0.2.2": {
       "process": "github:jspm/nodelibs-process@0.1.1"
