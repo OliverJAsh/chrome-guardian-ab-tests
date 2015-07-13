@@ -41,15 +41,23 @@ const render = data => {
         const headers = ['id', 'variants'];
 
         function variantButtonElement(test, variant, selectedVariant) {
-            return h('button', {
-                onclick: () => select$.onNext({ id: test.get('id'), variant }),
-                className: variant === selectedVariant ? 'is-active' : ''
-            }, variant);
+            return h('label', {
+                className: 'mdl-radio mdl-js-radio mdl-js-ripple-effect'
+            }, [
+                h('input', {
+                    type: 'radio',
+                    name: `${test.get('id')}[variant]`,
+                    onchange: () => select$.onNext({ id: test.get('id'), variant }),
+                    checked: variant === selectedVariant,
+                    className: 'mdl-radio__button'
+                }, variant),
+                variant
+            ]);
         }
 
         function rowElement(test, participations) {
             const cellElement =
-                header => ih('td',
+                header => ih('td', { className: 'mdl-data-table__cell--non-numeric' },
                     header !== 'variants'
                         ? test.get(header)
                         : test.get('variants').map(variant => {
@@ -65,8 +73,10 @@ const render = data => {
 
             return rows$.map(rows => {
                 return h('body', [
-                    h('table', [
-                        h('thead', h('tr', headers.map(key => h('th', key)))),
+                    h('table', {
+                        className: 'mdl-data-table mdl-js-data-table mdl-shadow--2dp'
+                    }, [
+                        h('thead', h('tr', headers.map(key => h('th', { className: 'mdl-data-table__cell--non-numeric' }, key)))),
                         ih('tbody', rows)
                     ])
                 ]);
@@ -109,8 +119,12 @@ const render = data => {
         startWith(initialDom).
         bufferWithCount(2, 1).
         map(([last, current]) => diff(last, current)).
-        reduce((out, patches) => patch(out, patches), out).
-        subscribeOnError(err => { throw err; });
+        scan(out, (out, patches) => patch(out, patches)).
+        subscribe(() => {
+            // Material design
+            window.componentHandler.upgradeDom();
+        }, (err) => { throw err; });
+
 };
 
 getData().then(render);
