@@ -21,6 +21,7 @@ System.config({
     "immutable": "npm:immutable@3.7.4",
     "moment": "github:moment/moment@2.10.3",
     "rx": "npm:rx@2.5.3",
+    "rx-dom": "npm:rx-dom@6.0.0",
     "vdom-virtualize": "npm:vdom-virtualize@0.0.10",
     "virtual-dom": "npm:virtual-dom@2.0.1",
     "github:jspm/nodelibs-assert@0.1.0": {
@@ -60,6 +61,10 @@ System.config({
     },
     "npm:next-tick@0.2.2": {
       "process": "github:jspm/nodelibs-process@0.1.1"
+    },
+    "npm:rx-dom@6.0.0": {
+      "process": "github:jspm/nodelibs-process@0.1.1",
+      "rx": "npm:rx@2.5.3"
     },
     "npm:rx@2.5.3": {
       "process": "github:jspm/nodelibs-process@0.1.1"

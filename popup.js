@@ -120,10 +120,10 @@ const render = data => {
         bufferWithCount(2, 1).
         map(([last, current]) => diff(last, current)).
         scan(out, (out, patches) => patch(out, patches)).
-        subscribe(() => {
-            // Material design
-            window.componentHandler.upgradeDom();
-        }, (err) => { throw err; });
+        // Material design
+        do(() => window.componentHandler.upgradeDom()).
+        observeOn(Rx.Scheduler.requestAnimationFrame).
+        subscribeOnError((err) => { throw err; });
 
 };
 
