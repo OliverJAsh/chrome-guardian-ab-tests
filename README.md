@@ -1,3 +1,13 @@
+# The Guardian A/B Tests Chrome Extension
+
+https://chrome.google.com/webstore/detail/ab-tests/nehbenedinjacnhlkjbdneedibcagmno
+
+Written using RxJS, virtual-dom, ImmutableJS, Material Design Lite, and jspm.
+
+![Demo](demo.png)
+
+# Install
+
 ```
 npm install
 ./node_modules/.bin/jspm install
@@ -8,5 +18,5 @@ npm install
 ```
 ./build.sh
 ./bundle.sh
-# manually upload artefact
+# manually upload artifact
 ```
