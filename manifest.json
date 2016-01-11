@@ -17,7 +17,8 @@
         "*://m.code.dev-theguardian.com/*",
         "*://preview.gutools.co.uk/*",
         "*://m.thegulocal.com/*",
-        "http://localhost:9000/*"
+        "http://localhost:9000/*",
+        "http://localhost:3000/*"
     ],
     "icons": {
         "16": "icon-16.png",
@@ -34,7 +35,8 @@
                 "*://m.code.dev-theguardian.com/*",
                 "*://preview.gutools.co.uk/*",
                 "*://m.thegulocal.com/*",
-                "http://localhost:9000/*"
+                "http://localhost:9000/*",
+                "http://localhost:3000/*"
             ],
             "js": ["content-script.js"]
         }
