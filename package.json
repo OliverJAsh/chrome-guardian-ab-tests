@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "eslint": "^1.10.3",
     "jspm": "^0.16.0-beta.3"
   },
   "jspm": {

@@ -1,3 +1,6 @@
+/*eslint-env browser*/
+/*eslint-disable no-var*/
+/*global chrome*/
 var getTests = function () {
     return new Promise(function (resolve) {
         var s = document.createElement('script');
