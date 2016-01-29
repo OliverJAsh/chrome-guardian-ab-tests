@@ -3,7 +3,7 @@
 echo "Bump version in manifest"
 read
 
-rm -rf upload
+rm -rf upload upload.zip
 mkdir upload
 
 cp -f background.js build.js* config.js content-script.js icon-* import.js\
