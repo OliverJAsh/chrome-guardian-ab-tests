@@ -1,4 +1,3 @@
-// When the extension is installed or upgraded ...
 chrome.runtime.onInstalled.addListener(function() {
     console.log('Installed');
     // Replace all rules ...
@@ -18,4 +17,3 @@ chrome.runtime.onInstalled.addListener(function() {
         ]);
     });
 });
-
