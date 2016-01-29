@@ -3,10 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "jspm": "^0.16.0-beta.3"
+    "jspm": "^0.16.25"
   },
   "jspm": {
-    "directories": {},
     "dependencies": {
       "immutable": "npm:immutable@^3.7.4",
       "moment": "github:moment/moment@^2.10.3",
@@ -15,9 +14,9 @@
       "virtual-dom": "npm:virtual-dom@^2.0.1"
     },
     "devDependencies": {
-      "babel": "npm:babel-core@^5.6.4",
-      "babel-runtime": "npm:babel-runtime@^5.6.4",
-      "core-js": "npm:core-js@^0.9.17"
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
     }
   }
 }
