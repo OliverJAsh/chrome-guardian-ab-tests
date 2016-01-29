@@ -100,8 +100,10 @@ const render = data => {
 
         const participations$ = table.intents.select$
             .startWith({})
-            .scan(initialParticipations,
-                (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant));
+            .scan(
+                (participations, selectedTest) => participations.set(selectedTest.id, selectedTest.variant),
+                initialParticipations
+            );
 
         // Side effect
         participations$.subscribe(setParticipations);
@@ -122,7 +124,7 @@ const render = data => {
         startWith(initialDom).
         bufferWithCount(2, 1).
         map(([last, current]) => diff(last, current)).
-        scan(out, (out, patches) => patch(out, patches)).
+        scan((out, patches) => patch(out, patches), out).
         // Material design
         do(() => window.componentHandler.upgradeDom()).
         observeOn(Rx.Scheduler.requestAnimationFrame).
