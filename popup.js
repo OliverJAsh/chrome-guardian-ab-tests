@@ -1,8 +1,11 @@
-import Rx         from 'rx';
-import moment     from 'moment';
-import h          from 'virtual-dom/h';
-import diff       from 'virtual-dom/diff';
-import patch      from 'virtual-dom/patch';
+/*eslint-disable no-console*/
+/*eslint-env browser*/
+/*eslint-disable new-cap*/
+/*global chrome*/
+import Rx from 'rx-dom';
+import h from 'virtual-dom/h';
+import diff from 'virtual-dom/diff';
+import patch from 'virtual-dom/patch';
 import virtualize from 'vdom-virtualize';
 import Im from 'immutable';
 
