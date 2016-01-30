@@ -119,7 +119,7 @@ const Row = (sources) => {
         })
     );
 
-    const index = sources => {
+    const create = sources => {
         const state$ = model(intent(sources.DOM), sources.props$);
 
         const value$ = state$.map(state => Im.fromJS({
@@ -135,7 +135,7 @@ const Row = (sources) => {
         return sinks;
     };
 
-    return index(sources);
+    return create(sources);
 };
 
 const main = (sources) => {
@@ -176,7 +176,7 @@ const main = (sources) => {
         ))
     );
 
-    const index = sources => {
+    const create = sources => {
         const state$ = model(intent(sources.DOM), sources.tab);
 
         const rows$ = state$
@@ -211,7 +211,7 @@ const main = (sources) => {
         return sinks;
     };
 
-    return index(sources);
+    return create(sources);
 };
 
 const domDriver = makeDOMDriver('body');
