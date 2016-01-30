@@ -7,6 +7,9 @@
   },
   "jspm": {
     "dependencies": {
+      "@cycle/core": "npm:@cycle/core@^6.0.0",
+      "@cycle/dom": "npm:@cycle/dom@^9.0.2",
+      "@cycle/isolate": "npm:@cycle/isolate@^1.2.0",
       "immutable": "npm:immutable@^3.7.4",
       "moment": "github:moment/moment@^2.10.3",
       "rx-dom": "npm:rx-dom@^7.0.3",
