@@ -2,6 +2,7 @@
 // http://jsbin.com/joyowa/6/edit?js,output
 // BMI
 // http://jsbin.com/bicoziniqu/1/edit?js,output
+// https://github.com/futurice/power-ui/blob/master/src/components/widgets/MonthSelector/index.js
 
 /*eslint-disable no-console*/
 /*eslint-env browser*/
