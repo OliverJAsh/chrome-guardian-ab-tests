@@ -66,9 +66,6 @@ const tabDriver = function (data$) {
     return { getData };
 };
 
-// TODO:
-// observeOn(Rx.Scheduler.requestAnimationFrame).
-
 const headers = ['id', 'variants'];
 
 const main = (sources) => {
@@ -166,7 +163,12 @@ const domDriver = makeDOMDriver('body');
 const drivers = {
     // We wrap the DOM driver to apply Material Design side effects
     DOM: vtree$ => {
-        const DOM = domDriver(vtree$.share());
+        const DOM = domDriver(
+            vtree$
+                .share()
+                // https://github.com/cyclejs/cycle-dom/issues/28
+                .observeOn(Rx.Scheduler.requestAnimationFrame)
+        );
         DOM.observable.subscribe(() => window.componentHandler.upgradeDom());
         return DOM;
     },
