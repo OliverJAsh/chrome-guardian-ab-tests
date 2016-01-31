@@ -14,7 +14,7 @@ import Im from 'immutable';
 import Cycle from '@cycle/core';
 import {makeDOMDriver, h} from '@cycle/dom';
 
-// TODO: Why is this needed?
+// Helper for using immutable iterables inside hyperscript
 const ih = (tagName, options, children) => {
     if (!children) {
         children = options;
