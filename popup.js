@@ -11,7 +11,6 @@ import Rx from 'rx-dom';
 import Im from 'immutable';
 
 import Cycle from '@cycle/core';
-import isolate from '@cycle/isolate';
 import {makeDOMDriver, h} from '@cycle/dom';
 
 // TODO: Why is this needed?
@@ -72,74 +71,11 @@ const tabDriver = function (data$) {
 
 const headers = ['id', 'variants'];
 
-const Row = (sources) => {
-    // TODO: Move up one scope
-    const intent = DOM => ({
-        changeVariant$: DOM.select('input').events('change')
-            .map(event => event.target.value)
-    });
-
-    const model = (actions, props$) => {
-        const test$ = props$.map(props => props.test);
-        const initialParticipations$ = props$.map(props => props.initialParticipations);
-        const initialSelectedVariant$ = Rx.Observable.combineLatest(
-            test$, initialParticipations$,
-            (test, initialParticipations) => initialParticipations.get(test.get('id'))
-        );
-        const selectedVariant$ = initialSelectedVariant$.concat(actions.changeVariant$);
-
-        return Rx.Observable.combineLatest(
-            test$, selectedVariant$,
-            (test, selectedVariant) => Im.fromJS({ test, selectedVariant })
-        );
-    };
-
-    const view = state$ => (
-        state$.map(state => {
-            const test = state.get('test');
-            const selectedVariant = state.get('selectedVariant');
-
-            return h('tr', headers.map((header) => (
-                ih('td.mdl-data-table__cell--non-numeric', (
-                    header !== 'variants'
-                        ? test.get(header)
-                        : test.get('variants').map(variant => {
-                            return h('label.mdl-radio.mdl-js-radio.mdl-js-ripple-effect', [
-                                h('input.mdl-radio__button', {
-                                    type: 'radio',
-                                    name: `${test.get('id')}[variant]`,
-                                    value: variant,
-                                    checked: variant === selectedVariant
-                                }, variant),
-                                variant
-                            ]);
-                        })
-                ))
-            )));
-        })
-    );
-
-    const create = sources => {
-        const state$ = model(intent(sources.DOM), sources.props$);
-
-        const value$ = state$.map(state => Im.fromJS({
-            id: state.get('test').get('id'),
-            variant: state.get('selectedVariant')
-        }));
-
-        const sinks = {
-            DOM: view(state$),
-            value: value$
-        };
-
-        return sinks;
-    };
-
-    return create(sources);
-};
-
 const main = (sources) => {
-    const intent = DOM => ({});
+    const intent = DOM => ({
+        changeTestVariant$: DOM.select('input').events('change')
+            .map(event => ({ id: event.target.name, variant: event.target.value }))
+    });
 
     const model = (actions, tab) => {
         const dataPromise = tab.getData();
@@ -147,6 +83,13 @@ const main = (sources) => {
         const participationsDataPromise = dataPromise.then(data => Im.fromJS(data.participations));
 
         const initialParticipations$ = Rx.Observable.fromPromise(participationsDataPromise);
+        const participations$ = initialParticipations$.flatMap(initialParticipations => (
+            actions.changeTestVariant$
+                .scan((participations, newTestState) => (
+                    participations.set(newTestState.id, newTestState.variant)
+                ), initialParticipations)
+                .startWith(initialParticipations)
+        ));
         const tests$ = Rx.Observable.fromPromise(testsDataPromise)
             .map(tests => (
                 tests.map(test => (
@@ -158,53 +101,58 @@ const main = (sources) => {
                 ))
             ));
 
-        return Rx.Observable.combineLatest(
-            tests$, initialParticipations$,
-            (tests, initialParticipations) => Im.fromJS({ tests, initialParticipations })
-        );
+        return Rx.Observable.of({ tests$: tests$.share(), participations$: participations$.share() });
     };
 
-    const view = (state$, rowVTrees$) => (
-        state$.map(() => (
+    const view = (state$) => {
+        const tbodyView = (state) => (
+            Rx.Observable.combineLatest(
+                state.tests$, state.participations$,
+                (tests, participations) => (
+                    tests.map(test => {
+                        const selectedVariant = participations.get(test.get('id'));
+                        return h('tr', headers.map((header) => (
+                            ih('td.mdl-data-table__cell--non-numeric', (
+                                header !== 'variants'
+                                    ? test.get(header)
+                                    : test.get('variants').map(variant => {
+                                        return h('label.mdl-radio.mdl-js-radio.mdl-js-ripple-effect', [
+                                            h('input.mdl-radio__button', {
+                                                type: 'radio',
+                                                name: `${test.get('id')}`,
+                                                value: variant,
+                                                checked: variant === selectedVariant
+                                            }, variant),
+                                            variant
+                                        ]);
+                                    })
+                            ))
+                        )));
+                    })
+                )
+            )
+                .startWith([h('tr', h('td', { attributes: { colspan: 2 } }, 'Loading'))])
+                .map(rowVTrees => ih('tbody', rowVTrees))
+        );
+
+        return state$.map(state => (
             // TODO: Centre loading text
             h('table.mdl-data-table.mdl-js-data-table.mdl-shadow--2dp', [
                 h('thead', h('tr', headers.map(key => h('th.mdl-data-table__cell--non-numeric', key)))),
-                rowVTrees$
-                    .startWith(h('tr', h('td', { attributes: { colspan: 2 } }, 'Loading')))
-                    .map(children => h('tbody', children))
+                tbodyView(state)
             ])
-        ))
-    );
+        ));
+    };
 
     const create = sources => {
         const state$ = model(intent(sources.DOM), sources.tab);
 
-        const rows$ = state$
-            .map(state => {
-                return state.get('tests').map(test => {
-                    const rowProps$ = Rx.Observable.of({
-                        test,
-                        initialParticipations: state.get('initialParticipations')
-                    });
-                    const row = isolate(Row)({ DOM: sources.DOM, props$: rowProps$ });
-                    return row;
-                }).toJS();
-            })
-            .share();
-
-        const rowVTrees$ = rows$.flatMap(rows => Rx.Observable.combineLatest(...rows.map(row => row.DOM)));
-        const rowValues$ = rows$.flatMap(rows => Rx.Observable.combineLatest(...rows.map(row => row.value)));
-
-        const participations$ = rowValues$
-            .map(participations => (
-                Im.fromJS(participations).reduce((acc, value, key) => {
-                    return acc.set(value.get('id'), value.get('variant'));
-                }, Im.Map())
-            ));
-        const tabData$ = participations$.map(participations => ({ participations }));
+        const tabData$ = state$
+            .flatMap(state => state.participations$)
+            .map(participations => ({ participations }));
 
         const sinks = {
-            DOM: view(state$, rowVTrees$),
+            DOM: view(state$),
             tab: tabData$
         };
 
