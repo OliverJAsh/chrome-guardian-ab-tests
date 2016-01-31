@@ -167,7 +167,6 @@ const drivers = {
     // We wrap the DOM driver to apply Material Design side effects
     DOM: vtree$ => {
         const DOM = domDriver(vtree$.share());
-        // TODO: Why does this run three times?
         DOM.observable.subscribe(() => window.componentHandler.upgradeDom());
         return DOM;
     },
