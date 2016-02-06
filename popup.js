@@ -67,8 +67,6 @@ const tabDriver = function (data$) {
     return { getData };
 };
 
-const headers = ['id', 'variants'];
-
 const main = (sources) => {
     const intent = DOM => ({
         changeTestVariant$: DOM.select('input').events('change')
@@ -109,23 +107,22 @@ const main = (sources) => {
                 (tests, participations) => (
                     tests.map(test => {
                         const selectedVariant = participations.get(test.get('id'));
-                        return h('tr', headers.map((header) => (
+                        return h('tr', [
+                            h('td.mdl-data-table__cell--non-numeric', test.get('id')),
                             ih('td.mdl-data-table__cell--non-numeric', (
-                                header !== 'variants'
-                                    ? test.get(header)
-                                    : test.get('variants').map(variant => {
-                                        return h('label.mdl-radio.mdl-js-radio.mdl-js-ripple-effect', [
-                                            h('input.mdl-radio__button', {
-                                                type: 'radio',
-                                                name: `${test.get('id')}`,
-                                                value: variant,
-                                                checked: variant === selectedVariant
-                                            }, variant),
-                                            variant
-                                        ]);
-                                    })
+                                test.get('variants').map(variant => {
+                                    return h('label.mdl-radio.mdl-js-radio.mdl-js-ripple-effect', [
+                                        h('input.mdl-radio__button', {
+                                            type: 'radio',
+                                            name: `${test.get('id')}`,
+                                            value: variant,
+                                            checked: variant === selectedVariant
+                                        }, variant),
+                                        variant
+                                    ]);
+                                })
                             ))
-                        )));
+                        ]);
                     })
                 )
             )
@@ -136,7 +133,7 @@ const main = (sources) => {
         return state$.map(state => (
             // TODO: Centre loading text
             h('table.mdl-data-table.mdl-js-data-table.mdl-shadow--2dp', [
-                h('thead', h('tr', headers.map(key => h('th.mdl-data-table__cell--non-numeric', key)))),
+                h('thead', h('tr', ['ID', 'Variants'].map(key => h('th.mdl-data-table__cell--non-numeric', key)))),
                 tbodyView(state)
             ])
         ));
