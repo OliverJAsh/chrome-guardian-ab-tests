@@ -1,10 +1,10 @@
 /*eslint-env browser*/
 /*eslint-disable no-var*/
 /*global chrome*/
-var getTests = function () {
+var getData = function () {
     return new Promise(function (resolve) {
         var s = document.createElement('script');
-        s.src = chrome.extension.getURL('post-active-tests.js');
+        s.src = chrome.extension.getURL('post-data.js');
         s.onload = function() {
             this.parentNode.removeChild(this);
         };
@@ -13,21 +13,13 @@ var getTests = function () {
         window.addEventListener('message', function (event) {
             var eventData = JSON.parse(event.data);
             if (eventData.type === 'tests') {
-                resolve(eventData.tests);
+                resolve({ tests: eventData.tests, participations: eventData.participations });
             }
         });
     });
 };
 
 var localStorageKey = 'gu.ab.participations';
-
-var getParticipations = function () {
-    var data = JSON.parse(window.localStorage.getItem(localStorageKey));
-    return Object.keys(data.value).reduce(function (accumulator, testId) {
-        accumulator[testId] = data.value[testId].variant;
-        return accumulator;
-    }, {});
-};
 
 var setParticipations = function (participations) {
     var data = {
@@ -43,15 +35,7 @@ var setParticipations = function (participations) {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.action) {
         case 'getData':
-            var participations = getParticipations();
-            getTests()
-                .then(function (tests) {
-                    return {
-                        participations: participations,
-                        tests: tests
-                    };
-                })
-                .then(sendResponse);
+            getData().then(sendResponse);
             break;
         case 'setParticipations':
             var participations = request.data.participations;

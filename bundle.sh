@@ -7,7 +7,7 @@ rm -rf upload upload.zip
 mkdir upload
 
 cp -f background.js build.js* config.js content-script.js icon-* import.js\
-    manifest.json popup.html post-active-tests.js upload
+    manifest.json popup.html post-data.js upload
 
 mkdir upload/jspm_packages
 
