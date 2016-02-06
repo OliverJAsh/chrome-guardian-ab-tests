@@ -107,7 +107,7 @@ const main = (sources) => {
                 (tests, participations) => (
                     tests.map(test => {
                         const selectedVariant = participations.get(test.get('id'));
-                        return h('tr', [
+                        return h('tr', { title: test.get('description') }, [
                             h('td.mdl-data-table__cell--non-numeric', test.get('id')),
                             ih('td.mdl-data-table__cell--non-numeric', (
                                 test.get('variants').map(variant => {
