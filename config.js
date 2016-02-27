@@ -15,6 +15,7 @@ System.config({
   map: {
     "@cycle/core": "npm:@cycle/core@6.0.0",
     "@cycle/dom": "npm:@cycle/dom@9.0.2",
+    "@cycle/isolate": "npm:@cycle/isolate@1.2.0",
     "babel": "npm:babel-core@5.8.35",
     "babel-runtime": "npm:babel-runtime@5.8.35",
     "core-js": "npm:core-js@1.2.6",

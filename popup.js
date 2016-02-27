@@ -12,6 +12,7 @@ import Rx from 'rx-dom';
 import Im from 'immutable';
 
 import Cycle from '@cycle/core';
+import isolate from '@cycle/isolate';
 import {makeDOMDriver, h} from '@cycle/dom';
 
 // Helper for using immutable iterables inside hyperscript
@@ -55,7 +56,22 @@ const tabDriver = function (data$) {
 
     // TEST:
     /* eslint-disable */
-    // const mockData = {"participations":{"FrontsOnArticles2":"notintest","RemoveStickyNav":"new","RelatedVariants":"notintest","PrebidPerformance":"notintest","LiveblogToast":"notintest","UserzoomSurveyMessageV3":"notintest"},"tests":[{"id":"FrontsOnArticles2","start":"2015-12-08","expiry":"2016-4-1","author":"Josh Holder","description":"Inject fronts containers on articles","audience":0.06,"audienceOffset":0.3,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"oneAndThree"},{"id":"twoAndTwo"}]},{"id":"RemoveStickyNav","start":"2015-1-07","expiry":"2016-3-1","author":"Josh Holder","description":"0% AB test for removing the sticky nav","audience":0.5,"audienceOffset":0.5,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"old"},{"id":"new"}]},{"id":"RelatedVariants","start":"2016-01-15","expiry":"2016-02-15","author":"Maria Chiorean","description":"Gets related content in using 3 new variants","audience":0.08,"audienceOffset":0.2,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"tags-only"},{"id":"tags-headline"},{"id":"in-body-links"}]},{"id":"IdentityRegisterV2","start":"2016-01-27","expiry":"2016-03-01","author":"James Pamplin","description":"New user registration page variant for Identity","audience":0.2,"audienceOffset":0.5,"successMeasure":"More people register","audienceCriteria":"everyone","dataLinkNames":"","idealOutcome":"More people register","variants":[{"id":"A"}]},{"id":"IdentitySignInV2","start":"2015-12-15","expiry":"2016-03-01","author":"James Pamplin","description":"New sign in page variants for Identity","audience":0.2,"audienceOffset":0.5,"successMeasure":"More people sign in","audienceCriteria":"everyone","dataLinkNames":"","idealOutcome":"More people sign in","variants":[{"id":"A"},{"id":"B"}]},{"id":"RtrtEmailFormArticlePromoV2","start":"2015-12-17","expiry":"2016-02-03","author":"Gareth Trufitt","description":"Test promotion of email form at bottom vs three paragraphs from end of article pages (when clicked from front)","audience":1,"audienceOffset":0,"successMeasure":"Increase email sign-up numbers","audienceCriteria":"Visitors hitting articles after visiting a front","dataLinkNames":"","idealOutcome":"Email sign-up is increased","variants":[{"id":"bottom-of-page"},{"id":"three-paras-from-bottom"}]},{"id":"PrebidPerformance","start":"2016-01-15","expiry":"2016-01-31","author":"Jimmy Breck-McKye","description":"run prebid.js header-bidding auctions before displaying DFP advertising","audience":0.02,"audienceOffset":0.1,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"variant"}]},{"id":"LiveblogToast","start":"2015-1-21","expiry":"2016-3-1","author":"Josh Holder","description":"0% AB test that enables liveblog toast notifications","audience":0,"audienceOffset":0,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"toast"}]},{"id":"UserzoomSurveyMessageV3","start":"2016-01-20","expiry":"2016-02-11","author":"Gareth Trufitt","description":"Segment the userzoom data-team survey","audience":0.2,"audienceOffset":0.7,"successMeasure":"Gain qualitative feedback via a survey","audienceCriteria":"10% of UK visitors to article page, on desktop, that haven't seen the message previously","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"survey-shown"}]}]};
+    // const mockData = {
+    //     "server": {
+    //         // id, desc, variant
+    //         "tests": [
+    //             {"id":"cmTopBannerPosition","description":"Test viewability and revenue changes when top banner is moved below first container on fronts and removed from articles","variants":["variant-1"]},
+    //             {"id":"someOtherTest","description":"Some other test","variants":["variant-2"]},
+    //             {"id":"someOtherTestNoVariant","description":"Some other test","variants":[]},
+    //         ],
+    //         "selectedTestVariant": "variant-1"
+    //     },
+    //     "client": {
+    //         // id, desc, variants
+    //         "tests": [{"id":"FrontsOnArticles2","description":"Inject fronts containers on articles","variants":[{"id":"control"},{"id":"oneAndThree"},{"id":"twoAndTwo"}]},{"id":"RemoveStickyNav","start":"2015-1-07","expiry":"2016-3-1","author":"Josh Holder","description":"0% AB test for removing the sticky nav","audience":0.5,"audienceOffset":0.5,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"old"},{"id":"new"}]},{"id":"RelatedVariants","start":"2016-01-15","expiry":"2016-02-15","author":"Maria Chiorean","description":"Gets related content in using 3 new variants","audience":0.08,"audienceOffset":0.2,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"tags-only"},{"id":"tags-headline"},{"id":"in-body-links"}]},{"id":"IdentityRegisterV2","start":"2016-01-27","expiry":"2016-03-01","author":"James Pamplin","description":"New user registration page variant for Identity","audience":0.2,"audienceOffset":0.5,"successMeasure":"More people register","audienceCriteria":"everyone","dataLinkNames":"","idealOutcome":"More people register","variants":[{"id":"A"}]},{"id":"IdentitySignInV2","start":"2015-12-15","expiry":"2016-03-01","author":"James Pamplin","description":"New sign in page variants for Identity","audience":0.2,"audienceOffset":0.5,"successMeasure":"More people sign in","audienceCriteria":"everyone","dataLinkNames":"","idealOutcome":"More people sign in","variants":[{"id":"A"},{"id":"B"}]},{"id":"RtrtEmailFormArticlePromoV2","start":"2015-12-17","expiry":"2016-02-03","author":"Gareth Trufitt","description":"Test promotion of email form at bottom vs three paragraphs from end of article pages (when clicked from front)","audience":1,"audienceOffset":0,"successMeasure":"Increase email sign-up numbers","audienceCriteria":"Visitors hitting articles after visiting a front","dataLinkNames":"","idealOutcome":"Email sign-up is increased","variants":[{"id":"bottom-of-page"},{"id":"three-paras-from-bottom"}]},{"id":"PrebidPerformance","start":"2016-01-15","expiry":"2016-01-31","author":"Jimmy Breck-McKye","description":"run prebid.js header-bidding auctions before displaying DFP advertising","audience":0.02,"audienceOffset":0.1,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"variant"}]},{"id":"LiveblogToast","start":"2015-1-21","expiry":"2016-3-1","author":"Josh Holder","description":"0% AB test that enables liveblog toast notifications","audience":0,"audienceOffset":0,"successMeasure":"","audienceCriteria":"All users","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"toast"}]},{"id":"UserzoomSurveyMessageV3","start":"2016-01-20","expiry":"2016-02-11","author":"Gareth Trufitt","description":"Segment the userzoom data-team survey","audience":0.2,"audienceOffset":0.7,"successMeasure":"Gain qualitative feedback via a survey","audienceCriteria":"10% of UK visitors to article page, on desktop, that haven't seen the message previously","dataLinkNames":"","idealOutcome":"","variants":[{"id":"control"},{"id":"survey-shown"}]}],
+    //         "participations": {"FrontsOnArticles2":"notintest","RemoveStickyNav":"new","RelatedVariants":"notintest","PrebidPerformance":"notintest","LiveblogToast":"notintest","UserzoomSurveyMessageV3":"notintest"}
+    //     }
+    // };
     /* eslint-enable */
     // const getData = () => Promise.resolve(Im.fromJS(mockData));
     const getData = () => sendMessageToPage({ action: 'getData' }).then(data => Im.fromJS(data));
@@ -155,12 +171,82 @@ const clientSideTests = (sources) => {
     return create(sources);
 };
 
+const serverSideTests = (sources) => {
+    const intent = DOM => ({
+        change$: DOM.select('input[type="radio"]').events('change')
+            .map(event => event.target.value),
+        clear$: DOM.select('button[type="reset"]').events('click').map(() => undefined)
+    });
+
+    const model = (actions, dataPromise) => {
+        const testsPromise = dataPromise.then(data => data.get('tests'));
+        const initialSelectedTestVariantPromise = dataPromise.then(data => data.get('selectedTestVariant'));
+
+        const initialSelectedTestVariant$ = Rx.Observable.fromPromise(initialSelectedTestVariantPromise);
+        const tests$ = Rx.Observable.fromPromise(testsPromise).do(x => console.log(1, x.toJS()));
+        const selectedTestVariant$ = initialSelectedTestVariant$.concat(Rx.Observable.merge(
+            actions.change$, actions.clear$
+        )).do(x => console.log(0, x));
+
+        return Rx.Observable.of({ tests$: tests$.share(), selectedTestVariant$: selectedTestVariant$.share() });
+    };
+
+    // const view = state$ => state$.map(state => h('div', 'Hello, World!'));
+    const view = (state$) => {
+        return state$.flatMap(state => (
+            Rx.Observable.combineLatest(
+                state.tests$, state.selectedTestVariant$,
+                (tests, selectedTestVariant) => {
+                    if (tests.size > 0) {
+                        return h('form', [
+                            ih('div', (
+                                tests.map(test => {
+                                    const isChecked = test.get('variants').contains(selectedTestVariant);
+                                    const isDisabled = test.get('variants').size === 0;
+                                    return h(`label.mdl-radio.mdl-js-radio.mdl-js-ripple-effect${isDisabled ? '.mdl-radio--disabled' : ''}`, { title: test.get('description') }, [
+                                        h('input.mdl-radio__button', {
+                                            type: 'radio',
+                                            name: 'server-side-test',
+                                            value: test.get('variants').first(),
+                                            checked: isChecked,
+                                            disabled: isDisabled
+                                        }),
+                                        h('span.mdl-radio__label', test.get('id'))
+                                    ]);
+                                }).toList()
+                            )),
+                            h('button.mdl-button.mdl-js-button.mdl-button--raised.mdl-js-ripple-effect', { type: 'reset' }, 'Clear')
+                        ]);
+                    } else {
+                        return h('div', 'No tests.');
+                    }
+                }
+            )
+        ))
+            .startWith(h('div', 'Loading'));
+    };
+
+    return {
+        DOM: view(model(intent(sources.DOM), sources.dataPromise))
+    };
+};
 
 const main = (sources) => {
     const dataPromise = sources.tab.getData();
-    const clientSideTestSinks = clientSideTests({ DOM: sources.DOM, dataPromise: dataPromise });
+    const clientSideTestSinks = isolate(clientSideTests)({ DOM: sources.DOM, dataPromise: dataPromise.then(data => data.get('client')) });
+    const serverSideTestSinks = isolate(serverSideTests)({ DOM: sources.DOM, dataPromise: dataPromise.then(data => data.get('server')) });
     return {
-        DOM: clientSideTestSinks.DOM,
+        DOM: Rx.Observable.of(
+            h('div', [
+                h('.island', [
+                    h('h1', { style: { display: 'none' } }, 'A/B Tests'),
+                    h('h2.mdl-typography--title.first-heading', 'Server-side tests'),
+                    serverSideTestSinks.DOM,
+                    h('h2.mdl-typography--title.last-heading', 'Client-side tests')
+                ]),
+                clientSideTestSinks.DOM
+            ])
+        ),
         tab: clientSideTestSinks.tab
     };
 };
@@ -175,7 +261,14 @@ const drivers = {
                 // https://github.com/cyclejs/cycle-dom/issues/28
                 .observeOn(Rx.Scheduler.requestAnimationFrame)
         );
-        DOM.observable.subscribe(() => window.componentHandler.upgradeDom());
+        DOM.observable.subscribe(() => {
+            // Upgrade to use Material Design
+            window.componentHandler.upgradeDom();
+
+            // Fix Material Design when clearing form
+            // https://github.com/google/material-design-lite/issues/4085
+            [...document.querySelectorAll('.mdl-js-radio')].forEach(el => el.MaterialRadio.checkToggleState());
+        });
         return DOM;
     },
     tab: tabDriver

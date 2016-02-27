@@ -13,7 +13,7 @@ var getData = function () {
         window.addEventListener('message', function (event) {
             var eventData = JSON.parse(event.data);
             if (eventData.type === 'tests') {
-                resolve({ tests: eventData.tests, participations: eventData.participations });
+                resolve({ client: eventData.client });
             }
         });
     });
