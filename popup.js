@@ -62,7 +62,7 @@ const tabDriver = function (data$) {
 
     // TEST:
     // return { getData: () => new Promise((resolve, reject) => setTimeout(() => {
-    //     getData().then(resolve, reject)
+    //     getData().then(resolve, reject);
     // }, 40000)) };
     return { getData };
 };
