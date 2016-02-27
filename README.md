@@ -6,14 +6,14 @@ Written using RxJS, virtual-dom, ImmutableJS, Material Design Lite, and jspm.
 
 ![Demo](demo.png)
 
-# Install
+## Testing
 
 ```
 npm install
 ./node_modules/.bin/jspm install
 ```
 
-# Release
+## Release
 
 ```
 ./build.sh
