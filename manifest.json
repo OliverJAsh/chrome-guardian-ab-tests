@@ -1,7 +1,7 @@
 {
-    "name": "A/B Tests",
-    "version": "0.0.8",
+    "name": "Guardian A/B tests",
     "description": "Easily view and switch A/B tests on theguardian.com.",
+    "version": "0.0.9",
     "background": {
         "scripts": ["background.js"],
         "persistent": false
