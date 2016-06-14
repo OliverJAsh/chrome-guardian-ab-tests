@@ -1,8 +1,10 @@
-# The Guardian A/B Tests Chrome Extension
+# Guardian A/B tests Chrome extension
 
-https://chrome.google.com/webstore/detail/ab-tests/nehbenedinjacnhlkjbdneedibcagmno
+Chrome extension to easily view and switch A/B tests on theguardian.com.
 
 Written using RxJS, virtual-dom, ImmutableJS, Material Design Lite, and jspm.
+
+https://chrome.google.com/webstore/detail/ab-tests/nehbenedinjacnhlkjbdneedibcagmno
 
 ![Demo](demo.png)
 
